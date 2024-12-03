@@ -7,6 +7,8 @@ import os
 from random import shuffle
 import re
 import nltk
+from nltk.corpus import stopwords
+from stop_words import get_stop_words
 
 # from bokeh.models import ColumnDataSource, LabelSet
 # from bokeh.plotting import figure, show, output_file
@@ -253,7 +255,9 @@ The structure in the end should look like this:
 counts_ted_top1000_no_stopword = [(WordA,FrequencyA),(WordB,FrequencyB)]'''
 
 # Your code goes here
-
+stop_words = get_stop_words('en')
+filtered_words = [word for word in tokens if word not in stop_words]
+counts_ted_top1000_no_stopword = Counter(filtered_words).most_common()
 mostfreqn = 30  # Here we define how many of them we want to see in the diagramm
 frequency = [y for (x, y) in counts_ted_top1000_no_stopword][:mostfreqn]
 word = [x for (x, y) in counts_ted_top1000_no_stopword][:mostfreqn]
