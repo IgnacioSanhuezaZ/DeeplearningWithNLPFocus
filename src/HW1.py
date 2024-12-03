@@ -1,4 +1,6 @@
 # Importing necessary libraries/modules; requires to be executed once for every session
+from collections import Counter
+
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -220,8 +222,7 @@ function. In the end we want an array with tuples of the structure:
 counts_ted_top1000 = [(WordA,FrequencyA),(WordB,FrequencyB)]
 '''
 
-# Your code goes here
-
+counts_ted_top1000 = Counter(tokens).most_common()
 mostfreqn = 30  # Here we define how many of them we want to see in the diagramm
 frequency = [y for (x, y) in counts_ted_top1000][:mostfreqn]
 word = [x for (x, y) in counts_ted_top1000][:mostfreqn]
