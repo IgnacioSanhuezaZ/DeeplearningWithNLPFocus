@@ -1,4 +1,6 @@
 # Importing necessary libraries/modules; requires to be executed once for every session
+from collections import Counter
+
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -220,8 +222,7 @@ function. In the end we want an array with tuples of the structure:
 counts_ted_top1000 = [(WordA,FrequencyA),(WordB,FrequencyB)]
 '''
 
-# Your code goes here
-
+counts_ted_top1000 = Counter(tokens).most_common()
 mostfreqn = 30  # Here we define how many of them we want to see in the diagramm
 frequency = [y for (x, y) in counts_ted_top1000][:mostfreqn]
 word = [x for (x, y) in counts_ted_top1000][:mostfreqn]
@@ -237,6 +238,11 @@ These types of words are called stopwords. What problems can stop words create i
 important to remove them?
 
 Your answer goes here:
+It would be hard to get a real meaning of the usage from connectors and other type of words that lack of meaning without 
+it context in text, by the other hand we are more concerned into working with the other types of words in which we can 
+extract the semantic use for them even if we need to get them out of context. This last point is especially relevant for
+the process of showing the word claud but we may want to give some context when regarding the vectorization of words
+in the future.
 '''
 
 '''Exercise 2.2 (2 Points)
