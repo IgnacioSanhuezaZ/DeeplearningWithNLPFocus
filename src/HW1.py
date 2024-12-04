@@ -7,6 +7,9 @@ import os
 import re
 import nltk
 from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+# from numpy import take
+# from stop_words import get_stop_words
 
 from bokeh.models import ColumnDataSource, LabelSet
 # from bokeh.plotting import figure, show, output_file
@@ -17,7 +20,8 @@ import zipfile
 import lxml.etree
 
 # output_notebook()
-nltk.download('punkt')
+nltk.download('punkt_tab')
+nltk.download('stopwords')
 
 # Upload the dataset if it's not already there: this may take a minute..
 file_name = './dataSet/ted_en-20160408.zip'
@@ -193,7 +197,7 @@ for s in sentences_strings_ted:
     if sentences_ted[-1][-1] and sentences_ted[-1][-1] == '':
         sentences_ted[-1].pop(-1)
 # print("sentences_ted[:10]: ", sentences_ted[:50])
-tokens = [x for flaten_s in sentences_ted for x in flaten_s]
+tokens = word_tokenize(input_text_clean)  # [x for flaten_s in sentences_ted for x in flaten_s]
 # print("tokens[:90]: ", tokens[:90])
 
 
@@ -253,8 +257,18 @@ The structure in the end should look like this:
 counts_ted_top1000_no_stopword = [(WordA,FrequencyA),(WordB,FrequencyB)]'''
 
 # Your code goes here
-# stop_words = get_stop_words('en')
-filtered_words = [word for word in tokens if word not in stopwords]
+# stop_words = get_stop_words('en')  # after preparing stopwords. Length filtered_words:  2430122
+stop_words = set(stopwords.words('english'))  # after preparing stopwords. Length filtered_words:  2247997
+print("before preparing stopwords")
+filtered_words = [word.lower() for word in tokens if word.lower() not in stop_words]
+# stop_words = stopwords.words()
+print("after preparing stopwords. Length filtered_words: ", len(filtered_words))
+# filtered_words = [] #word for word in tokens if word not in stop_words
+# for word in tokens:
+#     if word not in stop_words:
+#         filtered_words.append(word)
+#         print("length filtered words: ", len(filtered_words))
+
 counts_ted_top1000_no_stopword = Counter(filtered_words).most_common()
 mostfreqn = 30  # Here we define how many of them we want to see in the diagramm
 frequency = [y for (x, y) in counts_ted_top1000_no_stopword][:mostfreqn]
@@ -270,13 +284,13 @@ The below so-called wordcloud shows the most frequent words in a larger font and
 font size. It's a quick and cool way of visualizing the most frequent words!'''
 
 # Create a dictionary that maps words to their frequencies
-counts_ted_top1000_no_stopword = {word: count for word, count in counts_ted_top1000_no_stopword}
+counts_ted_top1000_no_stopword_dict = {word: count for word, count in counts_ted_top1000_no_stopword[:1000]}
 
 # Create a WordCloud object
 wordcloud = WordCloud(width=800, height=400, background_color='white')
 
 # Generate the word cloud
-wordcloud.generate_from_frequencies(counts_ted_top1000_no_stopword)
+wordcloud.generate_from_frequencies(counts_ted_top1000_no_stopword_dict)
 
 # Display the word cloud using matplotlib
 plt.figure(figsize=(10, 5))
@@ -345,6 +359,19 @@ that you would not expect. Think about where how these words might be connected 
 Take your time and understand why some of the words (luther, mary, dr, president) might be in this list.
 
 Your answer goes here:
+As the model is trained to output the relation from the input word to its corresponding context in the training data we 
+have two possible explanations: First, the usual context to use queen is with king and the semantic variance of the 
+vectors man in relation to woman and king in relation to man are really close, but in other context it could be used as
+a way to symbolize power and therefore extrapolating in other context you could find those other words like 'president' 
+or personal names like 'Mary' in the context of other text that uses those relations as historical context. Second, are 
+the biases in data. Whenever we take the input 'King' and 'Woman' as positive with 'Man' as negative component of the 
+equation it will depend on the inherent biases of the training data on how it will respond to those semantic relations
+that will show up as other kinds of deviations in the results, for example, 'poet', 'dr', 'minister' or 'president' 
+showing internal biases on the training data on how power relationships are entangled with the data used to train the
+model.
+Both answers could sound really similar, but the difference is that the first approach to the question regards only the
+high dimensional vector space resulting of the training of the model whereas the second the training data itself and how
+it reflects our society in one way or another. 
 
 '''
 
