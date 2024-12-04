@@ -9,7 +9,6 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 # from numpy import take
-# from stop_words import get_stop_words
 
 from bokeh.models import ColumnDataSource, LabelSet
 # from bokeh.plotting import figure, show, output_file
@@ -110,7 +109,6 @@ def remove_speaker(text):
     return without_speaker
 
 
-# To Do ##
 # implement your 3 functions.
 # Make the name of the functions sensible.
 def remove_resource_type(text):
@@ -140,23 +138,18 @@ def text_cleaned(text):
     ''' takes the raw text as input. Runs the text through cleaning functions.
        outputs a clean an preprocessed text for further analysis. '''
 
-    ## To Do ##
     # include your functions here - you can order the pipeline however you want.
     text_no_speaker = remove_speaker(text=text)
+    """take into account that the format of actions descriptions and resource types are both encapsulated in parentheses
+       therefore, calling just the one function that erases all parenthesis with it contents should be enough to do the
+       task without calling the same function twice  
+    """
     text_no_parentesis_content = remove_action_descriptions(text=text_no_speaker)
     cleaned_text = remove_symbols(text=text_no_parentesis_content)
     return cleaned_text
 
 
-# print("lenght of input text: ", len(input_text))
 input_text_clean = text_cleaned(input_text)
-# print("lenght of cleaned text: ", len(input_text_clean))
-# i = input_text_clean.find("See this")
-# print(input_text_clean[i:i + 300])
-# print()
-#
-# i = input_text_clean.find("You will earn")
-# print(input_text_clean[i:i + 245])
 
 '''
 Exercise 1.3 (6 Points)
@@ -187,7 +180,6 @@ sentences_ted to continue where you left, when you comeback next time. It will s
 '''
 
 sentences_strings_ted = input_text_clean.split(".")
-print("sentences_string_ted[:10]: ", sentences_strings_ted[:10])
 sentences_ted = []
 for s in sentences_strings_ted:
     if s and s[0] == ' ':
@@ -196,9 +188,7 @@ for s in sentences_strings_ted:
         sentences_ted.append(s.split(" "))
     if sentences_ted[-1][-1] and sentences_ted[-1][-1] == '':
         sentences_ted[-1].pop(-1)
-# print("sentences_ted[:10]: ", sentences_ted[:50])
 tokens = word_tokenize(input_text_clean)  # [x for flaten_s in sentences_ted for x in flaten_s]
-# print("tokens[:90]: ", tokens[:90])
 
 
 '''
@@ -245,8 +235,8 @@ Your answer goes here:
 It would be hard to get a real meaning of the usage from connectors and other type of words that lack of meaning without 
 it context in text, by the other hand we are more concerned into working with the other types of words in which we can 
 extract the semantic use for them even if we need to get them out of context. This last point is especially relevant for
-the process of showing the word claud but we may want to give some context when regarding the vectorization of words
-in the future.
+the process of showing the word cloud but we may want to give some context when regarding the vectorization of words
+in the future task (Point 3 onwards).
 '''
 
 '''Exercise 2.2 (2 Points)
@@ -257,17 +247,8 @@ The structure in the end should look like this:
 counts_ted_top1000_no_stopword = [(WordA,FrequencyA),(WordB,FrequencyB)]'''
 
 # Your code goes here
-# stop_words = get_stop_words('en')  # after preparing stopwords. Length filtered_words:  2430122
-stop_words = set(stopwords.words('english'))  # after preparing stopwords. Length filtered_words:  2247997
-print("before preparing stopwords")
+stop_words = set(stopwords.words('english'))
 filtered_words = [word.lower() for word in tokens if word.lower() not in stop_words]
-# stop_words = stopwords.words()
-print("after preparing stopwords. Length filtered_words: ", len(filtered_words))
-# filtered_words = [] #word for word in tokens if word not in stop_words
-# for word in tokens:
-#     if word not in stop_words:
-#         filtered_words.append(word)
-#         print("length filtered words: ", len(filtered_words))
 
 counts_ted_top1000_no_stopword = Counter(filtered_words).most_common()
 mostfreqn = 30  # Here we define how many of them we want to see in the diagramm
@@ -348,7 +329,7 @@ in the word-space.
 '''
 positive = ["king", "woman"]
 negative = ["man"]
-result4_1 = word_vectors.most_similar(positive=positive, negative=negative)
+result4_1 = word_vectors.most_similar(positive=positive, negative=negative, topn=10)
 print("The most similar word vector to '{}' minus '{}' is '{}'".format(positive, negative, result4_1))
 
 '''
