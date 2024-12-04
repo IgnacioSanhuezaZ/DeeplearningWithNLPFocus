@@ -4,13 +4,11 @@ from collections import Counter
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from random import shuffle
 import re
 import nltk
 from nltk.corpus import stopwords
-from stop_words import get_stop_words
 
-# from bokeh.models import ColumnDataSource, LabelSet
+from bokeh.models import ColumnDataSource, LabelSet
 # from bokeh.plotting import figure, show, output_file
 # from bokeh.io import output_notebook
 from wordcloud import WordCloud
@@ -255,8 +253,8 @@ The structure in the end should look like this:
 counts_ted_top1000_no_stopword = [(WordA,FrequencyA),(WordB,FrequencyB)]'''
 
 # Your code goes here
-stop_words = get_stop_words('en')
-filtered_words = [word for word in tokens if word not in stop_words]
+# stop_words = get_stop_words('en')
+filtered_words = [word for word in tokens if word not in stopwords]
 counts_ted_top1000_no_stopword = Counter(filtered_words).most_common()
 mostfreqn = 30  # Here we define how many of them we want to see in the diagramm
 frequency = [y for (x, y) in counts_ted_top1000_no_stopword][:mostfreqn]
@@ -304,19 +302,28 @@ look like in the embedding model? You may refer to the following gensim docs for
 https://radimrehurek.com/gensim/models/keyedvectors.html). This will give you 1 point.
 '''
 
-# Your solution goes here.
+word_vectors = model_ted.wv
+positive = ["house"]
+negative = []
+result4_0_1 = word_vectors.most_similar(positive=positive, negative=negative)
+print("The most similar word vector to '{}' is '{}'".format(positive, result4_0_1))
 
 '''The next task for you is to output the most similar word to "town"? This will also give you 1 point.'''
 
-# Your solution goes here.
+positive[0] = "town"
+result4_0_2 = word_vectors.most_similar(positive=positive, negative=negative)
+print("The most similar word vector to '{}' is '{}'".format(positive, result4_0_2))
 
 '''Finally, we want to find out how similar the words "town" and "house" are. Again: 1 point for this!'''
 
-# Your solution goes here.
+positive.append("house")
+result4_0_3 = word_vectors.most_similar(positive=positive, negative=negative)
+print("The most similar word vector to '{}' is '{}'".format(positive, result4_0_3))
 
 '''
 Exercise 4.1 (3 Points)
-Now that we have generated our embeddings, let's test some classical ideas: implement the following formula. Print out the 10 words, that are most similar to this formula:
+Now that we have generated our embeddings, let's test some classical ideas: implement the following formula. Print out
+the 10 words, that are most similar to this formula:
 King-Man+Woman=???
 There are two ways of computing similarity in word embeddings:
 
@@ -325,8 +332,10 @@ https://tedboy.github.io/nlps/generated/generated/gensim.models.Word2Vec.most_si
 You should try out both! In this case one of them is better, but both of them are valid methods for computing similarity 
 in the word-space.
 '''
-
-# Your implementation goes here.
+positive = ["king", "woman"]
+negative = ["man"]
+result4_1 = word_vectors.most_similar(positive=positive, negative=negative)
+print("The most similar word vector to '{}' minus '{}' is '{}'".format(positive, negative, result4_1))
 
 '''
 Exercise 4.2 (2 Points)
@@ -350,7 +359,7 @@ simply to give you an idea of how the data is arranged in high dimensional space
 To use the t-SNE code below, first put a list of the top 50 words (as strings, without stopwords) into 
 a variable words_top_ted.'''
 
-# Your implementation goes here.
+words_top_ted = counts_ted_top1000_no_stopword[:50]
 
 '''
 The following code gets the corresponding vectors from the model, assuming it's called model_ted:
@@ -366,22 +375,23 @@ from sklearn.manifold import TSNE
 
 tsne = TSNE(n_components=2, random_state=0)
 words_top_ted_tsne = tsne.fit_transform(words_top_vec_ted)
-p = figure(tools="pan,wheel_zoom,reset,save",
-           toolbar_location="above",
-           title="word2vec T-SNE for most common words")
+p = plt.figure(tools="pan,wheel_zoom,reset,save",
+               toolbar_location="above",
+               title="word2vec T-SNE for most common words")
 
 source = ColumnDataSource(data=dict(x1=words_top_ted_tsne[:, 0],
                                     x2=words_top_ted_tsne[:, 1],
                                     names=words_top_ted))
 
-p.scatter(x="x1", y="x2", size=8, source=source)
+ax = p.subplots()
+ax.scatter(x="x1", y="x2", size=8, source=source)
 
 labels = LabelSet(x="x1", y="x2", text="names", y_offset=6,
                   text_font_size="8pt", text_color="#555555",
                   source=source, text_align='center')
-p.add_layout(labels)
+ax.add_layout(labels)
 
-show(p)
+plt.show(p)
 
 '''
 That's it. We hope you had fun and learned something in the process :-)'''
