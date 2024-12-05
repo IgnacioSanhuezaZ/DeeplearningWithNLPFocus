@@ -11,8 +11,7 @@ from nltk.tokenize import word_tokenize
 # from numpy import take
 
 from bokeh.models import ColumnDataSource, LabelSet
-# from bokeh.plotting import figure, show, output_file
-# from bokeh.io import output_notebook
+from bokeh.plotting import figure, show
 from wordcloud import WordCloud
 
 import zipfile
@@ -126,8 +125,9 @@ def remove_symbols(text):
     text_to_work_with = text
     m = ""
     for line in text_to_work_with.split('\n'):
-        m += re.sub('[^a-zA-Z0-9.\']+|\b[A-Za-z]+\'[A-Za-z]+\b', ' ', line)
-
+        m += re.sub(
+            '[^a-zA-Z0-9.\']+|\'[A-Za-z]+|" "[A-Za-z]\'[A-Za-z][A-Za-z]\s+|[A-Za-z]\'" "[A-Za-z]+\s+|[a-zA-Z]+\'[A-Za-z0-9]+|\sit\'[A-Za-z0-9]+[A-Za-z]+\'[A-Za-z]+',
+            ' ', line)
     symbol_free_text = "".join(m)
     return symbol_free_text
 
@@ -192,7 +192,6 @@ for s in sentences_strings_ted:
         sentences_ted[-1].pop(-1)
 tokens = word_tokenize(input_text_clean)  # [x for flaten_s in sentences_ted for x in flaten_s]
 
-
 '''
 Exercise 1.4 (1 Point)
 The good side of converting all capital letters is, that we reduce the volume of the vocabulary. 
@@ -250,14 +249,8 @@ counts_ted_top1000_no_stopword = [(WordA,FrequencyA),(WordB,FrequencyB)]'''
 
 # Your code goes here
 stop_words = set(stopwords.words('english'))
-stop_words.add("'s")
-stop_words.add("n't")
-stop_words.add("'re")
-stop_words.add("'ve")
-stop_words.add("'m")
-stop_words.add("'d")
-stop_words.add("'ll")
-stop_words.add(".")
+stop_words.add(".")  # This take care of a special case in which the text was not formatted to have a synthax of
+# [A-Za-z\b]+-"." for the regex expression
 filtered_words = [word.lower() for word in tokens if word.lower() not in stop_words]
 
 counts_ted_top1000_no_stopword = Counter(filtered_words).most_common()
@@ -377,7 +370,7 @@ simply to give you an idea of how the data is arranged in high dimensional space
 To use the t-SNE code below, first put a list of the top 50 words (as strings, without stopwords) into 
 a variable words_top_ted.'''
 
-words_top_ted = [word for word, count in counts_ted_top1000_no_stopword[:50]]  #[tuple_in_list[0] for tuple_in_list in counts_ted_top1000_no_stopword[1:251]]
+words_top_ted = [word for word, count in counts_ted_top1000_no_stopword[:50]]
 
 '''
 The following code gets the corresponding vectors from the model, assuming it's called model_ted:
@@ -409,7 +402,7 @@ labels = LabelSet(x="x1", y="x2", text="names", y_offset=6,
                   source=source, text_align='center')
 p.add_layout(labels)
 
-plt.show(p)
+show(p)
 
 '''
 That's it. We hope you had fun and learned something in the process :-)'''
