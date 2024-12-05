@@ -331,7 +331,8 @@ in the word-space.
 '''
 positive = ["king", "woman"]
 negative = ["man"]
-result4_1 = word_vectors.most_similar(positive=positive, negative=negative, topn=10)
+result4_1 = word_vectors.most_similar(positive=positive, negative=negative)  # without the explicit value of topn=10
+#                                                                              'queen' shows up as a result
 print("The most similar word vector to '{}' minus '{}' is '{}'".format(positive, negative, result4_1))
 
 '''
