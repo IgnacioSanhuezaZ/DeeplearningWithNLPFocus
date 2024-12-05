@@ -126,7 +126,7 @@ def remove_symbols(text):
     text_to_work_with = text
     m = ""
     for line in text_to_work_with.split('\n'):
-        m += re.sub('[^a-zA-Z0-9.\']+|/[\w\s]*((?<!I)\'(?:[^\']+)\')[\w\s]*', ' ', line) # [-"\' s"|"\' ve"|"n\' t"|"\' re"|"\' m"|"\'s"|"\'ve"|"n\'t"|"\'re"|"\'m"]
+        m += re.sub('[^a-zA-Z0-9.\']+|\b[A-Za-z]+\'[A-Za-z]+\b', ' ', line)
 
     symbol_free_text = "".join(m)
     return symbol_free_text
