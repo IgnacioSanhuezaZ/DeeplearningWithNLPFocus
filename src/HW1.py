@@ -84,7 +84,8 @@ Your Solution goes here:
                     than necessary
 - Action descriptions: the description of the actions are also irrelevant for the task regarding only wordings
 - It has too many expression and quotation marks: those symbols does not provide valuable information to the task 
-                                                  asked for in this case
+                                                  asked for in this case, this should include every abbreviation 
+                                                  with hyphens
 '''
 '''
 Next we want to create a preprocessing pipeline to later clean the entire dataset in one go. 
@@ -125,7 +126,8 @@ def remove_symbols(text):
     text_to_work_with = text
     m = ""
     for line in text_to_work_with.split('\n'):
-        m += re.sub('[^a-zA-Z0-9.]+', ' ', line)
+        m += re.sub('[^a-zA-Z0-9.\']+|/[\w\s]*((?<!I)\'(?:[^\']+)\')[\w\s]*', ' ', line) # [-"\' s"|"\' ve"|"n\' t"|"\' re"|"\' m"|"\'s"|"\'ve"|"n\'t"|"\'re"|"\'m"]
+
     symbol_free_text = "".join(m)
     return symbol_free_text
 
@@ -248,6 +250,14 @@ counts_ted_top1000_no_stopword = [(WordA,FrequencyA),(WordB,FrequencyB)]'''
 
 # Your code goes here
 stop_words = set(stopwords.words('english'))
+stop_words.add("'s")
+stop_words.add("n't")
+stop_words.add("'re")
+stop_words.add("'ve")
+stop_words.add("'m")
+stop_words.add("'d")
+stop_words.add("'ll")
+stop_words.add(".")
 filtered_words = [word.lower() for word in tokens if word.lower() not in stop_words]
 
 counts_ted_top1000_no_stopword = Counter(filtered_words).most_common()
@@ -367,7 +377,7 @@ simply to give you an idea of how the data is arranged in high dimensional space
 To use the t-SNE code below, first put a list of the top 50 words (as strings, without stopwords) into 
 a variable words_top_ted.'''
 
-words_top_ted = counts_ted_top1000_no_stopword[:50]
+words_top_ted = [word for word, count in counts_ted_top1000_no_stopword[:50]]  #[tuple_in_list[0] for tuple_in_list in counts_ted_top1000_no_stopword[1:251]]
 
 '''
 The following code gets the corresponding vectors from the model, assuming it's called model_ted:
@@ -383,21 +393,21 @@ from sklearn.manifold import TSNE
 
 tsne = TSNE(n_components=2, random_state=0)
 words_top_ted_tsne = tsne.fit_transform(words_top_vec_ted)
-p = plt.figure(tools="pan,wheel_zoom,reset,save",
-               toolbar_location="above",
-               title="word2vec T-SNE for most common words")
 
-source = ColumnDataSource(data=dict(x1=words_top_ted_tsne[:, 0],
-                                    x2=words_top_ted_tsne[:, 1],
+p = figure(tools="pan,wheel_zoom,reset,save",
+           toolbar_location="above",
+           title="word2vec T-SNE for most common words")
+
+source = ColumnDataSource(data=dict(x1=words_top_ted_tsne[:,0],
+                                    x2=words_top_ted_tsne[:,1],
                                     names=words_top_ted))
 
-ax = p.subplots()
-ax.scatter(x="x1", y="x2", size=8, source=source)
+p.scatter(x="x1", y="x2", size=8, source=source)
 
 labels = LabelSet(x="x1", y="x2", text="names", y_offset=6,
                   text_font_size="8pt", text_color="#555555",
                   source=source, text_align='center')
-ax.add_layout(labels)
+p.add_layout(labels)
 
 plt.show(p)
 
