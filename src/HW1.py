@@ -8,7 +8,6 @@ import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-# from numpy import take
 
 from bokeh.models import ColumnDataSource, LabelSet
 from bokeh.plotting import figure, show
